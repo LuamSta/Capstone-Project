@@ -2,13 +2,14 @@
 
 ## Project Overview
 
-This repository documents my work on a Black Box Optimisation (BBO) challenge completed as part of the WorldQuant University Data Science programme.
+This repository documents my work on the Black Box Optimisation (BBO) Capstone Project as part of the Imperial College London Machine Learning programme.
 
-The objective is to maximise the outputs of eight unknown functions using a limited query budget. The underlying mathematical form of each function is hidden, meaning that optimisation decisions must be made using only historical observations and machine learning models.
+The challenge involves optimising eight unknown functions using a limited number of queries. The mathematical structure of each function is hidden, meaning optimisation decisions must be made solely from previously observed inputs and outputs. This creates a realistic machine learning scenario where the underlying system is unknown and data collection is expensive.
 
-This type of problem is highly relevant in real-world machine learning and engineering applications where experiments are expensive, time-consuming or impossible to evaluate exhaustively. Examples include hyperparameter tuning, manufacturing optimisation, algorithm design and scientific experimentation.
+The project focuses on developing efficient strategies for balancing exploration of uncertain regions against exploitation of promising areas. By applying Bayesian Optimisation techniques, surrogate modelling and acquisition functions, the objective is to maximise the performance of each unknown function within a constrained query budget.
 
-For me, this project provides practical experience with Bayesian Optimisation, surrogate modelling and decision-making under uncertainty, all of which are valuable skills for future Data Science and Machine Learning roles.
+This project provides practical experience with probabilistic machine learning, optimisation under uncertainty and sequential decision making. These concepts are widely used in machine learning applications such as hyperparameter tuning, engineering optimisation, scientific experimentation and resource allocation problems.
+
 
 ---
 
