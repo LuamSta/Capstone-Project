@@ -1,138 +1,113 @@
 # Black Box Optimisation Capstone Project
 
-## Project Overview
+## Project overview
 
-This repository documents my work on the Black Box Optimisation (BBO) Capstone Project as part of the Imperial College London Machine Learning programme.
+This repository documents my Black Box Optimisation capstone project for the Imperial College London Machine Learning programme. The challenge is to maximise eight unknown functions using a strict budget of 13 evaluations per function. Their mathematical form and noise level are hidden, so every query must balance learning about the search space with exploiting promising regions.
 
-The challenge involves optimising eight unknown functions using a limited number of queries. The mathematical structure of each function is hidden, meaning optimisation decisions must be made solely from previously observed inputs and outputs. This creates a realistic machine learning scenario where the underlying system is unknown and data collection is expensive.
+Each function accepts a continuous vector
 
-The project focuses on developing efficient strategies for balancing exploration of uncertain regions against exploitation of promising areas. By applying Bayesian Optimisation techniques, surrogate modelling and acquisition functions, the objective is to maximise the performance of each unknown function within a constrained query budget.
+\[
+x = [x_1, x_2, \ldots, x_d], \qquad x_i \in [0,1],
+\]
 
-This project provides practical experience with probabilistic machine learning, optimisation under uncertainty and sequential decision making. These concepts are widely used in machine learning applications such as hyperparameter tuning, engineering optimisation, scientific experimentation and resource allocation problems.
+where the dimensionality ranges from 2 to 8. Query points are submitted to six decimal places and produce a scalar response \(y=f(x)\).
 
+## Approach
 
----
+The optimisation loop uses Gaussian Process regression as a probabilistic surrogate. The current implementation includes:
 
-## Inputs and Outputs
+- evidence-based selection between Matérn 3/2 and Matérn 5/2 covariance functions;
+- automatic relevance determination (one length scale per input dimension);
+- a learned white-noise term for noisy or repeated observations;
+- output normalisation and multiple optimiser restarts;
+- scrambled Sobol candidate generation;
+- Upper Confidence Bound (UCB) and Expected Improvement (EI);
+- protection against zero-variance EI calculations;
+- removal of candidates already evaluated, including collisions after six-decimal rounding.
 
-### Inputs
+The acquisition functions are
 
-Each function accepts an input vector:
+\[
+\operatorname{UCB}(x) = \mu(x) + \beta\sigma(x)
+\]
 
-x = [x₁, x₂, ..., xₙ]
+and
 
-where:
+\[
+\operatorname{EI}(x) = (\mu(x)-y^+-\xi)\Phi(z)+\sigma(x)\phi(z),
+\qquad z=\frac{\mu(x)-y^+-\xi}{\sigma(x)}.
+\]
 
-* Number of dimensions ranges from 2 to 8
-* Input values are continuous
-* Query points must be submitted to six decimal places
-* Only one new query can be submitted per function each week
+Here, \(y^+\) is the best observed value, \(\beta\) controls UCB exploration, and \(\xi\) controls EI exploration.
 
-Example:
+## Repository structure
 
-Function 1 (2D)
+```text
+Capstone-Project/
+├── README.md
+├── requirements.txt
+└── Submission/
+    ├── BO_main.ipynb          # GP fitting and candidate recommendation
+    ├── Data Saver.ipynb       # validated construction of updated datasets
+    ├── function_1/ ... function_8/
+    ├── Submission Data/       # submitted inputs and returned outputs
+    └── Legacy Data/           # retained backup of original data
+```
 
-x = [0.523412, 0.872341]
+The legacy directory is intentionally retained as a backup. The optimisation notebooks use only the current files under `Submission/function_1` to `Submission/function_8`.
 
-Function 8 (8D)
+## Setup and execution
 
-x = [0.123456, 0.234567, 0.345678, 0.456789, 0.567891, 0.678912, 0.789123, 0.891234]
+Create an isolated environment from the repository root:
 
-### Outputs
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m ipykernel install --user --name capstone-bo --display-name "Capstone BO"
+jupyter lab
+```
 
-Each query returns a single response value:
+Run notebooks from the `Submission` directory so their relative data paths resolve correctly.
 
-y = f(x)
+1. Update the weekly input and output records in `Data Saver.ipynb`.
+2. Run all cells there to rebuild and validate the updated arrays.
+3. Restart the kernel for `BO_main.ipynb` and run all cells from top to bottom.
+4. Review convergence warnings, fitted kernels, and both recommendations.
+5. Confirm the chosen point is new and formatted to six decimal places.
 
-The optimisation objective is to identify input combinations that produce the highest possible output values.
+## Data integrity
 
----
+The notebooks validate that inputs are finite, two-dimensional, inside the unit hypercube, and matched to finite outputs. They also check that every weekly record covers all eight functions, surface repeated locations, verify final input/output row counts, and prevent repeated recommendations after rounding.
 
-## Challenge Objectives
+`Data Saver.ipynb` deliberately rebuilds `updated_*.npy` from the original arrays plus the complete weekly history. This makes reruns idempotent and prevents accidentally appending the same week twice.
 
-The primary goal is to maximise the value of each unknown function while operating under a strict query budget.
+## Evaluation and interpretation
 
-Key constraints include:
+Model quality should be assessed separately for every function because dimensionality, response scale, smoothness, and noise can differ substantially. Useful diagnostics include:
 
-* Only 13 total submissions per function
-* Unknown functional form
-* Unknown level of noise
-* Limited observations available early in the competition
-* Increasing dimensionality across functions
+- log marginal likelihood and kernel-bound warnings;
+- leave-one-out RMSE and predictive log likelihood;
+- empirical coverage of predictive intervals;
+- best observed value by week;
+- comparison with random and pure Sobol baselines;
+- stability of recommendations across optimiser seeds.
 
-Because queries are expensive, each submission must balance learning about the search space with exploiting promising regions already discovered.
+ARD length scales can suggest relatively influential dimensions, but they should be interpreted cautiously when there are few observations in a high-dimensional space.
 
----
+## Current status and next experiments
 
-## Technical Approach
+The repository contains the initial datasets plus seven recorded optimisation rounds. Current development focuses on reliable GP fitting, duplicate-safe recommendations, and performance in higher dimensions.
 
-### Surrogate Model
+Planned experiments are:
 
-My current approach uses Gaussian Process Regression (GPR) as a surrogate model for the unknown functions.
+1. extend the current evidence-based Matérn comparison with leave-one-out validation and an RBF baseline;
+2. comparison of isotropic and ARD length scales;
+3. sensitivity analysis for the learned noise level, \(\beta\), and \(\xi\);
+4. local bounded refinement of the strongest Sobol acquisition candidates;
+5. retrospective comparison of EI, UCB, and Sobol search;
+6. posterior mean, uncertainty, and acquisition plots for the two-dimensional functions.
 
-The Gaussian Process provides:
+## Limitations
 
-* Mean prediction
-* Prediction uncertainty
-* A probabilistic estimate of unexplored regions
-
-This makes it well suited for Bayesian Optimisation problems where evaluation budgets are limited.
-
-### Acquisition Function
-
-I currently use an Upper Confidence Bound (UCB) acquisition function:
-
-UCB(x) = μ(x) + βσ(x)
-
-where:
-
-* μ(x) = predicted mean
-* σ(x) = predicted uncertainty
-* β = exploration parameter
-
-### Exploration Strategy
-
-My current optimisation strategy is deliberately exploration-focused.
-
-Weeks 1-3:
-
-* UCB with β = 5
-* Prioritise uncertainty reduction
-* Sample unexplored regions
-
-Planned Weeks 4-6:
-
-* Reduce β
-* Transition towards balanced exploration and exploitation
-
-Planned Weeks 7-13:
-
-* Focus increasingly on exploitation
-* Concentrate searches around high-performing regions
-
-This staged approach is designed to avoid premature convergence while still allowing sufficient time to refine solutions near the end of the competition.
-
-### Future Experiments
-
-Potential future improvements include:
-
-* Expected Improvement (EI) acquisition functions
-* Feature importance analysis
-* Dimensionality reduction techniques
-* SVM-based classification of high-performing regions
-* Alternative Gaussian Process kernels
-
----
-
-## Current Status
-
-The project is currently in Week 3 of 13.
-
-Current focus:
-
-* Building robust Gaussian Process models
-* Improving performance in higher-dimensional functions
-* Expanding coverage of the search space
-* Evaluating the impact of exploration-heavy query selection
-
-This repository will be updated throughout the competition as new observations are collected and the optimisation strategy evolves.
+Gaussian Processes can be sensitive to kernel and noise assumptions when observations are sparse. ARD also introduces many hyperparameters for the higher-dimensional functions. Acquisition values are model-dependent and should be treated as decision support rather than guaranteed optima. This project addresses these limitations through explicit noise modelling, diagnostics, low-discrepancy global search, and planned retrospective validation.
