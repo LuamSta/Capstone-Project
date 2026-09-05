@@ -16,13 +16,13 @@ where the dimensionality ranges from 2 to 8. Query points are submitted to six d
 
 The optimisation loop uses Gaussian Process regression as a probabilistic surrogate. The current implementation includes:
 
-- evidence-based selection between Matérn 3/2 and Matérn 5/2 covariance functions;
+- evidence-based selection between Matérn covariance functions, with optional rough Matérn 1/2 support;
 - automatic relevance determination (one length scale per input dimension);
 - a learned white-noise term for noisy or repeated observations;
 - output normalisation and multiple optimiser restarts;
 - scrambled Sobol candidate generation;
-- Upper Confidence Bound (UCB) and Expected Improvement (EI);
-- protection against zero-variance EI calculations;
+- Upper Confidence Bound (UCB), Expected Improvement (EI), and Probability of Improvement (PI);
+- protection against zero-variance EI and PI calculations;
 - removal of candidates already evaluated, including collisions after six-decimal rounding.
 
 The acquisition functions are
@@ -38,7 +38,42 @@ and
 \qquad z=\frac{\mu(x)-y^+-\xi}{\sigma(x)}.
 \]
 
+Probability of Improvement is
+
+\[
+\operatorname{PI}(x)=\Phi\left(\frac{\mu(x)-y^+-\xi}{\sigma(x)}\right).
+\]
+
 Here, \(y^+\) is the best observed value, \(\beta\) controls UCB exploration, and \(\xi\) controls EI exploration.
+
+Kernel smoothness can be controlled when calling `main`:
+
+```python
+# Default: compare moderately smooth and smooth kernels.
+main(x, y, smoothness_options=(1.5, 2.5))
+
+# Include the rough Matérn 1/2 kernel in model selection.
+main(x, y, smoothness_options=(0.5, 1.5, 2.5))
+
+# Force the rough kernel for a targeted experiment.
+main(x, y, smoothness_options=(0.5,))
+```
+
+Rough-kernel support is optional because it can capture sharp changes but may overfit noise on smoother functions.
+
+The final recommendation policy can also be selected explicitly:
+
+```python
+# Pure exploitation: choose the candidate with the largest GP posterior mean.
+main(x, y, recommendation_mode="exploit")
+
+# Balanced improvement or confidence-bound alternatives.
+main(x, y, recommendation_mode="ei")
+main(x, y, recommendation_mode="pi")
+main(x, y, recommendation_mode="ucb")
+```
+
+`exploit` guarantees that predictive uncertainty is not part of the final ranking. UCB, EI, and PI are still calculated and printed for comparison. Pure exploitation is useful near the end of the query budget, but it is more dependent on the current GP being correctly specified.
 
 ## Repository structure
 
