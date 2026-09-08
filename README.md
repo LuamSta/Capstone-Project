@@ -81,15 +81,17 @@ main(x, y, recommendation_mode="ucb")
 Capstone-Project/
 ├── README.md
 ├── requirements.txt
-└── Submission/
+└── Submission Files/
     ├── BO_main.ipynb          # GP fitting and candidate recommendation
+    ├── Data Explorer.ipynb    # diagnostics and visual checks
     ├── Data Saver.ipynb       # validated construction of updated datasets
-    ├── function_1/ ... function_8/
-    ├── Submission Data/       # submitted inputs and returned outputs
-    └── Legacy Data/           # retained backup of original data
+    └── Data/
+        ├── function_1/ ... function_8/
+        ├── Submission Data/   # submitted inputs and returned outputs
+        └── Legacy Data/       # retained backup of original data
 ```
 
-The legacy directory is intentionally retained as a backup. The optimisation notebooks use only the current files under `Submission/function_1` to `Submission/function_8`.
+The legacy directory is intentionally retained as a backup. The optimisation notebooks use only the current files under `Submission Files/Data/function_1` to `Submission Files/Data/function_8`.
 
 ## Setup and execution
 
@@ -103,7 +105,7 @@ python -m ipykernel install --user --name capstone-bo --display-name "Capstone B
 jupyter lab
 ```
 
-Run notebooks from the `Submission` directory so their relative data paths resolve correctly.
+Run notebooks from either the repository root or the `Submission Files` directory. The notebooks resolve data paths through `Submission Files/Data`.
 
 1. Update the weekly input and output records in `Data Saver.ipynb`.
 2. Run all cells there to rebuild and validate the updated arrays.
