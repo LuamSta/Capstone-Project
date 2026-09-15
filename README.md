@@ -50,20 +50,20 @@ The optimisation loop uses Gaussian Process regression as a probabilistic surrog
 The acquisition functions are
 
 $$
-\operatorname{UCB}(x) = \mu(x) + \beta\sigma(x)
+\mathrm{UCB}(x) = \mu(x) + \beta\sigma(x)
 $$
 
 and
 
 $$
-\operatorname{EI}(x) = (\mu(x)-y^+-\xi)\Phi(z)+\sigma(x)\phi(z),
+\mathrm{EI}(x) = (\mu(x)-y^+-\xi)\Phi(z)+\sigma(x)\phi(z),
 \qquad z=\frac{\mu(x)-y^+-\xi}{\sigma(x)}.
 $$
 
 Probability of Improvement is
 
 $$
-\operatorname{PI}(x)=\Phi\left(\frac{\mu(x)-y^+-\xi}{\sigma(x)}\right).
+\mathrm{PI}(x)=\Phi\left(\frac{\mu(x)-y^+-\xi}{\sigma(x)}\right).
 $$
 
 Here, $y^+$ is the best observed value, $\beta$ controls UCB exploration, and $\xi$ controls EI exploration.
