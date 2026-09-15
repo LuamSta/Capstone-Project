@@ -71,16 +71,16 @@ Performance is measured by observed optimisation progress because the true globa
 | --- | ---: | ---: | ---: | --- |
 | 1 | 7.710875e-16 | 1.115019e-11 | 1.114942e-11 | `[0.715262, 0.720947]` |
 | 2 | 0.611205 | 0.629629 | 0.018424 | `[0.690566, 0.997509]` |
-| 3 | -0.034835 | -0.034835 | 0.000000 | `[0.492581, 0.611593, 0.340176]` |
-| 4 | -4.025542 | 0.506638 | 4.532180 | `[0.412607, 0.422577, 0.415189, 0.438106]` |
+| 3 | -0.034835 | -0.029348 | 0.005487 | `[0.987564, 0.501912, 0.078963]` |
+| 4 | -4.025542 | 0.525735 | 4.551278 | `[0.401606, 0.419143, 0.393235, 0.413199]` |
 | 5 | 1088.859618 | 8662.482500 | 7573.622882 | `[1.000000, 1.000000, 1.000000, 1.000000]` |
-| 6 | -0.714265 | -0.507718 | 0.206547 | `[0.233811, 0.271966, 0.742208, 0.715862, 0.005791]` |
+| 6 | -0.714265 | -0.224250 | 0.490015 | `[0.380179, 0.370163, 0.595055, 0.782124, 0.000000]` |
 | 7 | 1.364968 | 2.237965 | 0.872997 | `[0.057896, 0.316107, 0.433405, 0.132816, 0.342848, 0.711037]` |
 | 8 | 9.598482 | 9.949390 | 0.350908 | `[0.045526, 0.142949, 0.122326, 0.039481, 0.991262, 0.613700, 0.199489, 0.499233]` |
 
 Additional diagnostics printed by the notebook include fitted kernels, log marginal likelihood, selected Matern smoothness, learned noise levels, ARD length scales, candidate counts after filtering, and the model-space posterior mean at each recommendation.
 
-The strongest observed improvement is Function 5, where the model-supported boundary test produced a large gain. Function 4 also improved substantially after local refinement. Function 3 remains the clearest underperformance case because the current best still comes from the initial data.
+The strongest observed improvement is Function 5, where the model-supported boundary test produced a large gain. Function 4 also improved substantially after local refinement, and Function 6 now shows a meaningful recovery after the latest recorded local search. Function 3 remains the clearest underperformance case because the improvement is still small.
 
 ## Assumptions And Limitations
 

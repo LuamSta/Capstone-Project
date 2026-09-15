@@ -6,15 +6,15 @@ This repository documents my Black Box Optimisation capstone project for the Imp
 
 Each function accepts a continuous vector
 
-\[
+$$
 x = [x_1, x_2, \ldots, x_d], \qquad x_i \in [0,1],
-\]
+$$
 
-where the dimensionality ranges from 2 to 8. Query points are submitted to six decimal places and produce a scalar response \(y=f(x)\).
+where the dimensionality ranges from 2 to 8. Query points are submitted to six decimal places and produce a scalar response $y = f(x)$.
 
 ## Non-technical explanation
 
-This project searches for the best settings for eight hidden scoring systems when each trial is limited and valuable. Instead of trying random settings, it builds a statistical picture of each system from previous results, then recommends the next setting that is either promising or informative. The model uses uncertainty to balance learning about unexplored areas with improving on the best result so far. After eleven rounds, the strongest gains came from functions where the search learned useful local patterns, especially Functions 4, 5, 7, and 8. The repository shows the data, code, choices, limitations, and results needed to reproduce the work.
+This project searches for the best settings for eight hidden scoring systems when each trial is limited and valuable. Instead of trying random settings, it builds a statistical picture of each system from previous results, then recommends the next setting that is either promising or informative. The model uses uncertainty to balance learning about unexplored areas with improving on the best result so far. After twelve rounds, the strongest gains came from functions where the search learned useful local patterns, especially Functions 4, 5, 6, 7, and 8. The repository shows the data, code, choices, limitations, and results needed to reproduce the work.
 
 ## Final deliverable materials
 
@@ -30,7 +30,7 @@ This project searches for the best settings for eight hidden scoring systems whe
 
 ## Data
 
-The data consists of course-provided initial samples for eight black-box functions and eleven recorded optimisation rounds generated during the capstone. Each function has `initial_inputs.npy`, `initial_outputs.npy`, `updated_inputs.npy`, and `updated_outputs.npy` files under `Submission Files/Data/function_1` to `Submission Files/Data/function_8`.
+The data consists of course-provided initial samples for eight black-box functions and twelve recorded optimisation rounds generated during the capstone. Each function has `initial_inputs.npy`, `initial_outputs.npy`, `updated_inputs.npy`, and `updated_outputs.npy` files under `Submission Files/Data/function_1` to `Submission Files/Data/function_8`.
 
 The arrays are small enough to keep directly in GitHub. There are no large external datasets in this project. The only external source is the capstone black-box evaluator/course materials, which provided the initial data and returned the submitted output values.
 
@@ -49,24 +49,24 @@ The optimisation loop uses Gaussian Process regression as a probabilistic surrog
 
 The acquisition functions are
 
-\[
+$$
 \operatorname{UCB}(x) = \mu(x) + \beta\sigma(x)
-\]
+$$
 
 and
 
-\[
+$$
 \operatorname{EI}(x) = (\mu(x)-y^+-\xi)\Phi(z)+\sigma(x)\phi(z),
 \qquad z=\frac{\mu(x)-y^+-\xi}{\sigma(x)}.
-\]
+$$
 
 Probability of Improvement is
 
-\[
+$$
 \operatorname{PI}(x)=\Phi\left(\frac{\mu(x)-y^+-\xi}{\sigma(x)}\right).
-\]
+$$
 
-Here, \(y^+\) is the best observed value, \(\beta\) controls UCB exploration, and \(\xi\) controls EI exploration.
+Here, $y^+$ is the best observed value, $\beta$ controls UCB exploration, and $\xi$ controls EI exploration.
 
 Kernel smoothness can be controlled when calling `main`:
 
@@ -103,20 +103,20 @@ The submission notebook now applies per-function settings rather than one global
 
 The Gaussian Process kernel hyperparameters are optimised by scikit-learn's marginal-likelihood optimiser with five restarts. These include the signal scale, one ARD length scale per input dimension, and the learned white-noise level. The notebook compares allowed Matérn smoothness values and keeps the fitted model with the highest log marginal likelihood.
 
-The default smoothness comparison uses Matérn \( \nu=1.5 \) and \( \nu=2.5 \). Functions with rougher or stalled behaviour also compare \( \nu=0.5 \). UCB uses \( \beta=3 \). EI and PI use a scale-aware \( \xi \), set to one percent of the transformed target standard deviation for each function.
+The default smoothness comparison uses Matérn $\nu = 1.5$ and $\nu = 2.5$. Functions with rougher or stalled behaviour also compare $\nu = 0.5$. UCB uses $\beta = 3$. EI and PI use a scale-aware $\xi$, set to one percent of the transformed target standard deviation for each function.
 
 ## Results
 
-The table below reports best observed values after eleven recorded optimisation rounds. These are observed improvements under a strict query budget, not certified global optima.
+The table below reports best observed values after twelve recorded optimisation rounds. These are observed improvements under a strict query budget, not certified global optima.
 
 | Function | Initial best | Current best | Improvement | Best observed input |
 | --- | ---: | ---: | ---: | --- |
 | 1 | 7.710875e-16 | 1.115019e-11 | 1.114942e-11 | `[0.715262, 0.720947]` |
 | 2 | 0.611205 | 0.629629 | 0.018424 | `[0.690566, 0.997509]` |
-| 3 | -0.034835 | -0.034835 | 0.000000 | `[0.492581, 0.611593, 0.340176]` |
-| 4 | -4.025542 | 0.506638 | 4.532180 | `[0.412607, 0.422577, 0.415189, 0.438106]` |
+| 3 | -0.034835 | -0.029348 | 0.005487 | `[0.987564, 0.501912, 0.078963]` |
+| 4 | -4.025542 | 0.525735 | 4.551278 | `[0.401606, 0.419143, 0.393235, 0.413199]` |
 | 5 | 1088.859618 | 8662.482500 | 7573.622882 | `[1.000000, 1.000000, 1.000000, 1.000000]` |
-| 6 | -0.714265 | -0.507718 | 0.206547 | `[0.233811, 0.271966, 0.742208, 0.715862, 0.005791]` |
+| 6 | -0.714265 | -0.224250 | 0.490015 | `[0.380179, 0.370163, 0.595055, 0.782124, 0.000000]` |
 | 7 | 1.364968 | 2.237965 | 0.872997 | `[0.057896, 0.316107, 0.433405, 0.132816, 0.342848, 0.711037]` |
 | 8 | 9.598482 | 9.949390 | 0.350908 | `[0.045526, 0.142949, 0.122326, 0.039481, 0.991262, 0.613700, 0.199489, 0.499233]` |
 
@@ -182,13 +182,13 @@ ARD length scales can suggest relatively influential dimensions, but they should
 
 ## Current status and next experiments
 
-The repository contains the initial datasets plus eleven recorded optimisation rounds. Current development focuses on reliable GP fitting, duplicate-safe recommendations, and performance in higher dimensions.
+The repository contains the initial datasets plus twelve recorded optimisation rounds. Current development focuses on reliable GP fitting, duplicate-safe recommendations, and performance in higher dimensions.
 
 Planned experiments are:
 
 1. extend the current evidence-based Matérn comparison with leave-one-out validation and an RBF baseline;
 2. comparison of isotropic and ARD length scales;
-3. sensitivity analysis for the learned noise level, \(\beta\), and \(\xi\);
+3. sensitivity analysis for the learned noise level, $\beta$, and $\xi$;
 4. local bounded refinement of the strongest Sobol acquisition candidates;
 5. retrospective comparison of EI, UCB, and Sobol search;
 6. posterior mean, uncertainty, and acquisition plots for the two-dimensional functions.

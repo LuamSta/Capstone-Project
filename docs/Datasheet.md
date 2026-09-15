@@ -28,14 +28,14 @@ All input values are numeric, continuous, and bounded in `[0, 1]`. Outputs are s
 
 | Function | Input dimensionality | Initial rows | Current rows | Best observed output | Best observed input |
 | --- | ---: | ---: | ---: | ---: | --- |
-| 1 | 2 | 10 | 21 | 1.115019e-11 | `[0.715262, 0.720947]` |
-| 2 | 2 | 10 | 21 | 0.629629 | `[0.690566, 0.997509]` |
-| 3 | 3 | 15 | 26 | -0.034835 | `[0.492581, 0.611593, 0.340176]` |
-| 4 | 4 | 30 | 41 | 0.506638 | `[0.412607, 0.422577, 0.415189, 0.438106]` |
-| 5 | 4 | 20 | 31 | 8662.482500 | `[1.000000, 1.000000, 1.000000, 1.000000]` |
-| 6 | 5 | 20 | 31 | -0.507718 | `[0.233811, 0.271966, 0.742208, 0.715862, 0.005791]` |
-| 7 | 6 | 30 | 41 | 2.237965 | `[0.057896, 0.316107, 0.433405, 0.132816, 0.342848, 0.711037]` |
-| 8 | 8 | 40 | 51 | 9.949390 | `[0.045526, 0.142949, 0.122326, 0.039481, 0.991262, 0.613700, 0.199489, 0.499233]` |
+| 1 | 2 | 10 | 22 | 1.115019e-11 | `[0.715262, 0.720947]` |
+| 2 | 2 | 10 | 22 | 0.629629 | `[0.690566, 0.997509]` |
+| 3 | 3 | 15 | 27 | -0.029348 | `[0.987564, 0.501912, 0.078963]` |
+| 4 | 4 | 30 | 42 | 0.525735 | `[0.401606, 0.419143, 0.393235, 0.413199]` |
+| 5 | 4 | 20 | 32 | 8662.482500 | `[1.000000, 1.000000, 1.000000, 1.000000]` |
+| 6 | 5 | 20 | 32 | -0.224250 | `[0.380179, 0.370163, 0.595055, 0.782124, 0.000000]` |
+| 7 | 6 | 30 | 42 | 2.237965 | `[0.057896, 0.316107, 0.433405, 0.132816, 0.342848, 0.711037]` |
+| 8 | 8 | 40 | 52 | 9.949390 | `[0.045526, 0.142949, 0.122326, 0.039481, 0.991262, 0.613700, 0.199489, 0.499233]` |
 
 Known gaps and limitations:
 
@@ -60,7 +60,7 @@ The course reflection notes show that the strategy evolved over the rounds:
 - Function 5 was explicitly tested at `[1, 1, 1, 1]` after outputs suggested that values increased near the upper boundary.
 - Functions 4, 7, and 8 received more local refinement once UCB and EI recommendations began agreeing or recent observations looked strong.
 
-The repository currently contains the initial observations plus eleven recorded optimisation rounds. The course notes include a tenth-round reflection; the dataset now includes the subsequent recorded update as well.
+The repository currently contains the initial observations plus twelve recorded optimisation rounds. The course notes include a tenth-round reflection; the dataset now includes later recorded updates as well.
 
 ## Preprocessing And Uses
 
