@@ -14,7 +14,7 @@ where the dimensionality ranges from 2 to 8. Query points are submitted to six d
 
 ## Non-technical explanation
 
-This project searches for the best settings for eight hidden scoring systems when each trial is limited and valuable. Instead of trying random settings, it builds a statistical picture of each system from previous results, then recommends the next setting that is either promising or informative. The model uses uncertainty to balance learning about unexplored areas with improving on the best result so far. After twelve rounds, the strongest gains came from functions where the search learned useful local patterns, especially Functions 4, 5, 6, 7, and 8. The repository shows the data, code, choices, limitations, and results needed to reproduce the work.
+This project searches for the best settings for eight hidden scoring systems when each trial is limited and valuable. Instead of trying random settings, it builds a statistical picture of each system from previous results, then recommends the next setting that is either promising or informative. The model uses uncertainty to balance learning about unexplored areas with improving on the best result so far. After twelve rounds, the largest gains came from functions where the search learned useful local patterns, especially Functions 4, 5, 6, 7, and 8. The repository includes the data, code, decisions, limitations, and results needed to reproduce and review the work.
 
 ## Final deliverable materials
 
@@ -28,11 +28,22 @@ This project searches for the best settings for eight hidden scoring systems whe
 | Model card | [`docs/Model Card.md`](docs/Model%20Card.md) |
 | Python dependencies | [`requirements.txt`](requirements.txt) |
 
+## Capstone submission checklist
+
+| Requirement | How this repository meets it |
+| --- | --- |
+| Clear code presentation | `BO_main.ipynb` presents the optimisation method, final per-function settings, diagnostics, and recommendations in a commented notebook. |
+| Data, code, and project materials easy to find | The table above links every final deliverable from the README. |
+| Datasheet and model card | `docs/Datasheet.md` and `docs/Model Card.md` are completed project-specific versions of the Module 25 templates. |
+| Non-technical write-up | The section above gives a general-audience summary of the purpose, process, and outcomes. |
+| Large-data policy | The data arrays are small and stored in the repository; no large external dataset is required. |
+| Reproducibility | Setup instructions, data rebuilding notes, and notebook execution order are documented below. |
+
 ## Data
 
 The data consists of course-provided initial samples for eight black-box functions and twelve recorded optimisation rounds generated during the capstone. Each function has `initial_inputs.npy`, `initial_outputs.npy`, `updated_inputs.npy`, and `updated_outputs.npy` files under `Submission Files/Data/function_1` to `Submission Files/Data/function_8`.
 
-The arrays are small enough to keep directly in GitHub. There are no large external datasets in this project. The only external source is the capstone black-box evaluator/course materials, which provided the initial data and returned the submitted output values.
+The arrays are small enough to keep directly in GitHub. There are no large external datasets in this project. The only external source is the capstone black-box evaluator/course materials, which provided the initial data and returned the submitted output values. The recorded submission tracker is linked from [`Submission Files/Data/Submission Data/Submissions Sheet.md`](Submission%20Files/Data/Submission%20Data/Submissions%20Sheet.md).
 
 ## Model
 

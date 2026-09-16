@@ -2,7 +2,7 @@
 
 This model card describes the optimisation approach used in `Submission Files/BO_main.ipynb`. It follows the Mini-lesson 21.2 model-card framework and draws on the course-note reflections about transparency, interpretability, strengths, and limitations.
 
-## Overview
+## Model Description
 
 **Name:** BBO Gaussian Process Bayesian Optimisation.
 
@@ -12,15 +12,15 @@ This model card describes the optimisation approach used in `Submission Files/BO
 
 **Implementation:** Python notebook using NumPy, SciPy, scikit-learn, and scrambled Sobol candidate generation.
 
-**Core model:** A scikit-learn `GaussianProcessRegressor` with a constant kernel multiplied by an automatic-relevance-determination Matern kernel, plus a learned `WhiteKernel` noise term.
+**Model architecture:** A scikit-learn `GaussianProcessRegressor` with a constant kernel multiplied by an automatic-relevance-determination Matern kernel, plus a learned `WhiteKernel` noise term.
 
 ```text
 ConstantKernel * Matern(ARD length scales) + WhiteKernel
 ```
 
-**Inputs:** Observed input matrix `x`, where each row is a point in `[0, 1]^d`, and observed output vector `y`. Dimensionality ranges from 2 to 8 across the eight functions.
+**Input:** Observed input matrix `x`, where each row is a point in `[0, 1]^d`, and observed output vector `y`. Dimensionality ranges from 2 to 8 across the eight functions.
 
-**Outputs:** Recommended next input points rounded to six decimal places. The notebook prints UCB, EI, and PI suggestions, then records a final per-function recommendation mode.
+**Output:** Recommended next input points rounded to six decimal places. The notebook prints UCB, EI, and PI suggestions, then records a final per-function recommendation mode.
 
 ## Intended Use
 
@@ -82,7 +82,7 @@ Additional diagnostics printed by the notebook include fitted kernels, log margi
 
 The strongest observed improvement is Function 5, where the model-supported boundary test produced a large gain. Function 4 also improved substantially after local refinement, and Function 6 now shows a meaningful recovery after the latest recorded local search. Function 3 remains the clearest underperformance case because the improvement is still small.
 
-## Assumptions And Limitations
+## Limitations
 
 The approach assumes that nearby candidate points often have related output values and that each function can be approximated well enough by a Matern-kernel Gaussian Process to guide the next query. This assumption supports data-efficient optimisation, but it can fail for discontinuous, extremely sharp, highly noisy, or irregular functions.
 
@@ -104,6 +104,14 @@ Strengths:
 - Uses duplicate filtering and rounded submission checks.
 - Allows per-function settings rather than forcing one global policy.
 - Produces diagnostics that make decisions easier to audit.
+
+## Trade-offs
+
+The main trade-off is between exploration and exploitation. UCB explores uncertain regions but can spend scarce evaluations on points that are informative rather than high-scoring. EI and PI focus more directly on improvement, but they can become too local when the current best region looks convincing. Posterior-mean exploitation is useful near the end of the query budget, but it depends heavily on the GP being well specified.
+
+There is also a simplicity trade-off. A single global policy would be easier to explain, but it performed less well because the eight functions have different dimensions, scales, and apparent smoothness. The final notebook therefore uses per-function settings, which improves transparency and performance at the cost of more configuration.
+
+Candidate-pool search is another practical compromise. Large Sobol pools are reproducible and robust, but they do not guarantee a continuous optimum. Trust-region candidates improve local density around strong observations, but they can miss distant optima if the surrogate becomes overconfident.
 
 Adding more detail improves usefulness when it explains decisions, assumptions, and failure modes. The model card deliberately stays at a stakeholder-readable level and points to the notebook for executable detail. That structure is sufficient for the GitHub deliverable because the README, notebook, datasheet, and model card work together: the README orients the reader, the datasheet documents the data, the model card explains the approach, and the notebook contains implementation-level evidence.
 

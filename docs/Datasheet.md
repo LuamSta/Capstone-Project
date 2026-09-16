@@ -37,6 +37,21 @@ All input values are numeric, continuous, and bounded in `[0, 1]`. Outputs are s
 | 7 | 6 | 30 | 42 | 2.237965 | `[0.057896, 0.316107, 0.433405, 0.132816, 0.342848, 0.711037]` |
 | 8 | 8 | 40 | 52 | 9.949390 | `[0.045526, 0.142949, 0.122326, 0.039481, 0.991262, 0.613700, 0.199489, 0.499233]` |
 
+## Function-Specific Overview
+
+The template asks for a real-world scenario for each function. The capstone does not reveal the real domains, so this datasheet does not invent application meanings. Each function is treated as a generic bounded tuning problem: choose a continuous input vector in `[0, 1]^d` to maximise a hidden scalar score.
+
+| Function | Template-style description | Observed data behaviour | Strategy and confidence |
+| --- | --- | --- | --- |
+| 1 | Two-dimensional hidden score with 10 initial and 22 current rows. | Outputs span many orders of magnitude and are dominated by near-zero values plus sharp outliers. | Uses rank-transformed targets, rough-kernel comparison, and avoidance of poor regions. Confidence is low to moderate because the scale is difficult to model. |
+| 2 | Two-dimensional hidden score with 10 initial and 22 current rows. | A repeated point returned noticeably different values, so noise is plausible. Initial coverage was also uneven. | Uses GP uncertainty and duplicate-aware recommendations. Confidence is low to moderate because noise is hard to estimate from few repeats. |
+| 3 | Three-dimensional hidden score with 15 initial and 27 current rows. | Improvement has been small, suggesting a difficult or poorly sampled landscape. | Uses EI and local candidate pools around the strongest observations. Confidence is low because the best value improved only slightly. |
+| 4 | Four-dimensional hidden score with 30 initial and 42 current rows. | The search found a much better local region after several poor responses, suggesting sharp structure. | Uses rough-kernel model selection and trust-region refinement. Confidence is moderate because improvement is strong but global coverage is still limited. |
+| 5 | Four-dimensional hidden score with 20 initial and 32 current rows. | Larger coordinate values appeared promising, and the all-ones boundary point produced the best observed score. | Uses exploitation and boundary-aware reasoning. Confidence is moderate, with a risk that the apparent boundary trend is local or coincidental. |
+| 6 | Five-dimensional hidden score with 20 initial and 32 current rows. | Recent local search produced a meaningful recovery after weaker boundary-focused points. | Uses EI, rough-kernel comparison, wider distance filters, and local refinement. Confidence is low to moderate because dimensionality is high. |
+| 7 | Six-dimensional hidden score with 30 initial and 42 current rows. | One submitted point produced a strong best value, but the space remains sparse. | Uses EI refinement while keeping spacing from previous points. Confidence is low to moderate because high dimensionality leaves large unexplored regions. |
+| 8 | Eight-dimensional hidden score with 40 initial and 52 current rows. | Best values are close together and several strong points sit near coordinate boundaries. | Uses EI with larger distance filters to avoid brittle repeats. Confidence is low to moderate because the eight-dimensional space is sparsely covered. |
+
 Known gaps and limitations:
 
 - The true objective functions are unknown, so the dataset cannot label global optima.
@@ -58,9 +73,15 @@ The course reflection notes show that the strategy evolved over the rounds:
 - EI became more important later as the strategy shifted toward exploitation under the limited submission budget.
 - Function 1 required special handling because its values varied over many orders of magnitude and were difficult to model directly.
 - Function 5 was explicitly tested at `[1, 1, 1, 1]` after outputs suggested that values increased near the upper boundary.
-- Functions 4, 7, and 8 received more local refinement once UCB and EI recommendations began agreeing or recent observations looked strong.
+- Functions 3, 4, 6, 7, and 8 received more local refinement once global recommendations stalled or recent observations looked strong.
 
 The repository currently contains the initial observations plus twelve recorded optimisation rounds. The course notes include a tenth-round reflection; the dataset now includes later recorded updates as well.
+
+## Weekly Iteration And Learning
+
+The first rounds focused on broad exploration because the hidden functions had few observations and unknown smoothness. As the returned outputs accumulated, the strategy became more function-specific. Function 1 needed a target transform because raw values were numerically awkward. Function 5 benefited from testing a clear boundary hypothesis. Functions 3, 4, and 6 needed local candidate pools because global search was either stalled or too diffuse. Functions 7 and 8 kept more conservative spacing because high-dimensional local refinement can repeatedly choose nearly identical points after rounding.
+
+If restarted, the main changes would be to introduce per-function settings earlier, deliberately schedule a small number of repeated evaluations for noise estimation, and compare the GP recommendations against simple Sobol and local-search baselines after every round.
 
 ## Preprocessing And Uses
 
